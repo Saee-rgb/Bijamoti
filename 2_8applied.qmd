@@ -1,0 +1,114 @@
+---
+title: "Ch3_Ex_8"
+author: "Nibedita Mahalinobis"
+format: html
+editor: visual
+---
+
+This question involves the use of simple linear regression on the Auto data set. Let's have a look at the data set first.
+
+```{r}
+#|warning :false
+library(ISLR2)
+#Viewing a first few rows of dataset
+head(Auto)  
+#What are all the variables in dataset?
+names(Auto)
+#What is the nature of the variables?
+str(Auto)
+
+```
+
+**Q.8 (a)** Use the lm() function to perform a simple linear regression with mpg as the response and horsepower as the predictor. Use the summary() function to print the results. Comment on the output.
+
+**Solution :**\
+We assume the functional form of the regression to be :
+
+$$
+           mpg = \beta_0 + \beta_1 \cdot horsepower
+$$
+
+```{r}
+
+attach(Auto) #With this command , we specify that all the                 variable names correspond to Auto dataset 
+
+#Fitting the regression 
+lm.fit = lm(mpg ~ horsepower)
+
+#To get the summary for the model 
+summary(lm.fit) 
+```
+
+What can we conclude from the summary given above ?\
+**i.** Is there a relationship between the predictor and the response?
+
+**\>** The p value (\< 2.2e-16) for F test is virtually zero . i.e . we can reject the $H_0$ which hypothesizes that there is no relationship present .\
+We can conclude that there is some relationship is present between `mpg` and `horsepower` .
+
+**ii.** How strong is the relationship between the predictor and the response?
+
+**\>** As Residual Sum of Errors , RSE is 4.906 , around 21% is the percentage error in prediction of response variable `mpg` . We can see that \$R\^2 = 0.6049\$ which implies that around 60% of variance in `mpg` is explained by the predictor `horsepower.`
+
+```{r}
+cor(mpg , horsepower)
+
+```
+
+**iii**.Is the relationship between the predictor and the response
+positive or negative?
+
+**\>** Correlation ceofficient is -0.778 indicating that relationship between the predictor and response is negative.
+
+**iv.** What is the predicted mpg associated with a horsepower of
+98? What are the associated 95 % confdence and prediction intervals ?
+
+```{r}
+#To get confidence interval 
+predict(lm.fit , data.frame(horsepower = c(98)) , interval = "confidence")
+
+#To get prediction interval 
+predict(lm.fit , data.frame(horsepower = c(98)) , interval = "prediction")
+```
+
+**\>** Predicted mpg is 24.26708 with \[ 23.97308 , 24.96108\] as 98% confidence interval and \[14.8094 , 34.12476\] as 98% prediction interval.
+
+**Q.8 (b)** Plot the response and the predictor. Use the `abline()` function to display the least squares regression line.
+
+**Solution :**
+
+```{r}
+
+#To get the scatter plot of variables 
+plot(x = horsepower , y = mpg , pch =16 , 
+     col = "grey" , main = "Scatterplot of mpg vs horsepower" ) 
+
+#To plot the regression line i.e  line of best fit
+abline(lm.fit , col = "blue" , lwd = 2)
+```
+
+**Q.8 (c)** Use the plot() function to produce diagnostic plots of the least squares regression ft. Comment on any problems you see with the ft.\
+**Solution :**
+
+```{r}
+#We first divide the panel into 2 x 2 ,  4 parts 
+par(mfrow = c(2,2))
+
+#We plot all the diagnostics plots
+plot(lm.fit)
+```
+
+**Interpretation** : \
+1.Residual Vs Fitted\
+Observe that residuals are not equally spread in the Residual vs Fitted plot . We can see some pattern (close to parabolic pattern) , which implies that,there is some problem in linearity assumption. i.e. predictor may have some non linear relationship with response.
+
+2.Normal Q-Q \
+If a few observations in the left bottom and right bottom corner are excluded , residuals closely follow the straight line. We can say that residuals are normally distributed.
+
+3.Scale-Location \
+Residuals are not equally spread along the ranges of predictors.They are crowed at the right end. Hence, assumption of homoscedasticity(equal variance) is not true.
+
+4.Residuals vs Leverage\
+As there points lying beyond the dashed line which is Cook's distance , these are the influential points(leverage points and outliers ) .
+
+To understand more on how to interpret diagnostic plots you can check out the following link: \
+<https://library.virginia.edu/data/articles/diagnostic-plots>
